@@ -4,9 +4,39 @@ const size = 600;
 
 const playBtn = document.getElementById("play-btn")! as HTMLButtonElement
 
-playBtn.addEventListener("click", () => {
-  velocity.x = 1
+function resetGame() {
+  snake = [new Point(0, 0), new Point(1, 0), new Point(2, 0)]
+  velocity = { x: 0, y: 0 }
   score = 0
+  isFoodSpawned = false
+  ctx.clearRect(0, 0, size, size)
+  drawSnake()
+}
+
+function drawGameOver() {
+  ctx.save()
+  ctx.font = "64px sans-serif"
+  ctx.textAlign = "center"
+  drawShadow("white")
+  ctx.fillStyle = "white"
+  ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2)
+  ctx.restore()
+}
+
+function finishGame() {
+  velocity.x = 0
+  velocity.y = 0
+  snake = []
+  ctx.clearRect(0, 0, size, size)
+  drawGameOver()
+  drawScore()
+  playBtn.disabled = false
+  playBtn.textContent = "Restart"
+}
+
+playBtn.addEventListener("click", () => {
+  resetGame()
+  velocity.x = 1
   gameLoop()
   playBtn.disabled = true
 })
@@ -111,8 +141,7 @@ function gameLoop() {
   );
 
   if (isCollision) {
-    velocity.x = 0
-    velocity.y = 0
+    finishGame()
     return;
   }
 
